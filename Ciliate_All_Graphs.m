@@ -155,7 +155,7 @@ xlabel("Month", "FontSize", 14)
 % Fall
 
 figure, hold on
-ciliate_to_plot_fall = [1 3 9 10 13 17 24 25];
+ciliate_to_plot_fall = [1 3 9 10 13 17 24];
 for count_fall = ciliate_to_plot_fall
     var2plot = daily_data{:,ciliate_ind(count_fall)}./daily_data.ml_analyzed;
     [ mdate_mat, y_mat, yearlist, yd ] = timeseries2ydmat( mdate, var2plot );
