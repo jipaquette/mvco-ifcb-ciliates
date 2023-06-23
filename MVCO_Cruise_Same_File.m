@@ -4,13 +4,19 @@
 %%
 %loading data
 %MVCO data
-cnn_mvco = readtable('/Users/jillianpaquette/Desktop/WHOI Work/count_by_class_time_series_CNN_daily_20220622.csv');
+%cnn_mvco = readtable('/Users/jillianpaquette/Desktop/WHOI Work/count_by_class_time_series_CNN_daily_20220622.csv');
+A = load('/Volumes/IFCB_products/MVCO/summary_v4/count_group_class.mat');
 load("count_manual_current_jill_MVCO.mat")
 load('/Users/jillianpaquette/Desktop/WHOI Work/MVCO_Environmental_Tables.mat')
 
-cnn_mvco_ttable = table2timetable(cnn_mvco);
+cnn_mvco_ttable_full = table2timetable(A.classcount_opt_adhoc_merge,'rowtimes', A.meta_data.datetime);
+cnn_mvco_ttable_full.ml_analyzed = A.meta_data.ml_analyzed;
+cnn_mvco_ttable_full.pid = [];    
+cnn_mvco_ttable = retime(cnn_mvco_ttable_full, 'daily', 'sum');     
+cnn_mvco_ttable.Time = dateshift(cnn_mvco_ttable.Time, 'start', 'day');
+
+%cnn_mvco_ttable = table2timetable(cnn_mvco);
 env_mvco_ttable = table2timetable(MVCO_Daily);
-cnn_mvco_ttable.datetime = dateshift(cnn_mvco_ttable.datetime, 'start', 'day');
 
 cnn_env = synchronize(cnn_mvco_ttable, env_mvco_ttable, 'daily');
 
@@ -146,8 +152,9 @@ end
 %%
 %cruise data
 %loading data
-load('/Volumes/IFCB_products/NESLTER_transect/summary/carbon_group_class_withTS.mat')
-load('count_manual_current_jill_NESLTER.mat')
+%load('/Volumes/IFCB_products/NESLTER_transect/summary/carbon_group_class_withTS.mat')
+load('/Volumes/IFCB_products/NESLTER_transect/summary/count_group_class.mat')
+B = load('count_manual_current_jill_NESLTER.mat')
 uwindall = find(strcmp(meta_data.sample_type, 'underway') & ~meta_data.skip);
 
 %%
@@ -267,8 +274,9 @@ figure
 
 %MVCO
 %nexttile
-plot(cnn_env.datetime, cnn_env.(cnn_mvco_classlabel)./cnn_env.ml_analyzed)
-datetick("keeplimits")
+figure
+plot(cnn_env.days, cnn_env.(cnn_mvco_classlabel)./cnn_env.ml_analyzed)
+%datetick("keeplimits")
 hold on
 datetime_bin_m = datetime(matdate_bin_mvco, "ConvertFrom", "datenum");
 class_ind_m = strcmp(class2use_label, class2use_mvco);
@@ -278,20 +286,23 @@ legend("CNN Auto Classifier", "Manual Annotations", "Location", "northoutside")
 ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
 xlabel("Year", "FontSize", 14)
 title("MVCO CNN Results compared to Manual Annotations")
-
+%%
 %cruise
 %nexttile
 figure
-plot(meta_data.datetime, classC_opt_adhoc_merge.(cruise_classlabel)./meta_data.ml_analyzed)
-datetick("keeplimits")
-
+plot(meta_data.datetime(uwindall), classcount_opt_adhoc_merge.(cruise_classlabel)(uwindall)./meta_data.ml_analyzed(uwindall))
+%plot(meta_data.datetime(uwindall), classC_opt_adhoc_merge.(cruise_classlabel)(uwindall)./meta_data.ml_analyzed(uwindall)/1000)
+%datetick("keeplimits")
+%ylabel('Carbon (\mug |^{-1})')
+ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
 %nexttile
-figure
+%figure
+hold on
 datetime_bin_c = datetime(matdate_cruise, "ConvertFrom", "datenum");
 class_ind_c = strcmp(class2use_label, class2use_cruise);
-plot(datetime_bin_c, (classcount_cruise(:,class_ind_c)./ml_analyzed_cruise(class_ind_c)), "r*")
-ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
+plot(datetime_bin_c, (classcount_cruise(:,class_ind_c)./ml_analyzed_cruise), "r*")
 xlabel("Year", "FontSize", 14)
+ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
 title("Cruise CNN Results compared to Manual Annotations")
 
 %%
@@ -422,4 +433,91 @@ set(gca,'ColorScale','log')
 %caxis([0 1e5])
 
 %%
+%mvco temp ciliate count
+temp_m = cnn_env.Beam_temperature_corrected;
+ciliate_bxp_m = (cnn_env.(cnn_mvco_classlabel)./cnn_env.ml_analyzed).^(1/4);
+
+%nbins_m = 7;
+bins = 0:2:22;
+[temp_discrete_m, e_m] = discretize(temp_m, bins);
+%[temp_discrete_m, e_m] = discretize(temp_m, nbins_m);
+
+% binwidth_m = e_m(2) - e_m(1) - 0.0001;
+% 
+% %rightedges_m = e_m(1:nbins_m) + binwidth_m;
+% 
+% rightedgelabels_m = arrayfun(@num2str, rightedges_m, 'UniformOutput', 0);
+% leftedgelabels_m = arrayfun(@num2str, e_m(1:nbins_m), 'UniformOutput', 0);
+
+%labels_m = leftedgelabels_m + "-" + rightedgelabels_m;
+%labels_m = num2str((1:2:21)');
+labels = num2str(mean([bins(1:2:end-1);bins(2:2:end)]));
+figure
+%boxplot(ciliate_bxp_m, temp_discrete_m);
+boxplot(ciliate_bxp_m, temp_discrete_m, 'Labels', labels_m);
+ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
+xlabel("Beam Temperature Corrected (°C)", "FontSize", 14)
+
+%%
+%boxplot cruise temp ciliate C
+temp_c = meta_data.temperature(uwindall);
+ciliate_bxp_c = classC_opt_adhoc_merge.(cruise_classlabel)(uwindall);
+
+nbins_c = 7;
+
+[temp_discrete_c, e_c] = discretize(temp_c, nbins_c);
+
+binwidth_c = e_c(2) - e_c(1) - 0.0001;
+
+rightedges_c = e_c(1:nbins_c) + binwidth_c;
+
+rightedgelabels_c = arrayfun(@num2str, rightedges_c, 'UniformOutput', 0);
+leftedgelabels_c = arrayfun(@num2str, e_c(1:nbins_c), 'UniformOutput', 0);
+
+labels_c = leftedgelabels_c + "-" + rightedgelabels_c;
+
+figure
+boxplot(ciliate_bxp_c, temp_discrete_c, 'Labels', labels_c)
+ylabel(['\it' class2use_label '\rm Carbon '], "FontSize", 14)
+xlabel("Temperature (°C)", "FontSize", 14)
+
+%%
+%boxplot with lats & ciliate c
+lat_c = meta_data.latitude(uwindall);
+%ciliate_bxp_c
+
+nbins_lat_c = 4;
+[lat_discrete_c, e_lat_c] = discretize(lat_c, nbins_lat_c);
+binwidth_lat_c = e_lat_c(2) - e_lat_c(1) - 0.0001;
+rightedges_lat_c = e_lat_c(1:nbins_lat_c) + binwidth_lat_c;
+rightedgelabels_lat_c = arrayfun(@num2str, rightedges_lat_c, 'UniformOutput', 0);
+leftedgelabels_lat_c = arrayfun(@num2str, e_lat_c(1:nbins_lat_c), 'UniformOutput', 0);
+
+labels_lat_c = leftedgelabels_lat_c + "-" + rightedgelabels_lat_c;
+
+figure
+boxplot(ciliate_bxp_c, lat_discrete_c, 'Labels', labels_lat_c)
+ylabel(['\it' class2use_label '\rm Carbon '], "FontSize", 14)
+xlabel("Latitude", "FontSize", 14)
+%%
+%and boxplot with temp and lats
+figure
+boxplot(temp_c, lat_discrete_c, 'Labels', labels_lat_c)
+
+%%
+% %%
+% %shelf latitudes and temperature
+% innershelf_lat = 40.98;
+% midshelf_minlat = 40.98;
+% midshelf_maxlat  = 40.327;
+% outershelf_minlat = 40.327;
+% outershelf_maxlat = 39.923;
+% upperslope_lat = 39.923;
+% 
+% % metaT.longitude >= minlon & metaT.longitude <= maxlon & ...
+% %       metaT.latitude >= L11minlat & metaT.latitude <= L11maxlat
+% 
+% midshelf = meta_data.latitude(uwindall) >= midshelf_minlat & meta_data.latitude(uwindall) <= midshelf_maxlat;
+% outershelf = meta_data.latitude(uwindall) >= outershelf_minlat & meta_data.latitude(uwindall) <= outershelf_maxlat;
+% % upperslope = 
 
