@@ -153,7 +153,7 @@ end
 %cruise data
 %loading data
 %load('/Volumes/IFCB_products/NESLTER_transect/summary/carbon_group_class_withTS.mat')
-load('/Volumes/IFCB_products/NESLTER_transect/summary/count_group_class.mat')
+load('/Volumes/IFCB_products/NESLTER_transect/summary/count_group_class_withTS.mat')
 B = load('count_manual_current_jill_NESLTER.mat')
 uwindall = find(strcmp(meta_data.sample_type, 'underway') & ~meta_data.skip);
 
@@ -297,13 +297,13 @@ plot(meta_data.datetime(uwindall), classcount_opt_adhoc_merge.(cruise_classlabel
 ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
 %nexttile
 %figure
-hold on
-datetime_bin_c = datetime(matdate_cruise, "ConvertFrom", "datenum");
-class_ind_c = strcmp(class2use_label, class2use_cruise);
-plot(datetime_bin_c, (classcount_cruise(:,class_ind_c)./ml_analyzed_cruise), "r*")
-xlabel("Year", "FontSize", 14)
-ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
-title("Cruise CNN Results compared to Manual Annotations")
+% hold on
+% datetime_bin_c = datetime(matdate_cruise, "ConvertFrom", "datenum");
+% class_ind_c = strcmp(class2use_label, class2use_cruise);
+% plot(datetime_bin_c, (classcount_cruise(:,class_ind_c)./ml_analyzed_cruise), "r*")
+% xlabel("Year", "FontSize", 14)
+% ylabel(['\it' class2use_label '\rm (ml^{-1})'], "FontSize", 14)
+% title("Cruise CNN Results compared to Manual Annotations")
 
 %%
 %lines across as months
