@@ -367,26 +367,32 @@ mvco_sums.Tontonia_appendiculariformis = tontonia_appendiculariformis_m;
 
 %%
 %highest counts for mvco
-%balanion = 2.3859e+03
-%ciliophora = 1.4664e+04
-%mesodinium  = 3.0900e+03
+%balanion = 2.3859e+03 = 2385.9
+%ciliophora = 1.4664e+04 = 14664
+%mesodinium  = 3.0900e+03 = 3090
 %laboea strobila = 502.9804
 %paratontonia gracillima = 921.1206
-%strombidium m1 = 1.1002e+03
-%strombidium m2 = 
+%strombidium m1 = 1.1002e+03 = 1100.2
+%strombidium m2 = 534.5174
 %strombidium tintinnodes = 742.6627 
-%tintinnopsis = 1.1714e+03
+%tintinnopsis = 1.1714e+03 = 1171.4
+%1. ciliophora 2. mesodinium 3. balanion 4. tintinnopsis 5. strombidium m1
+%6. paratontonia gracillima 7. strombidium tintinnodes 8. strombidium m2
+%9. laboea strobila
 
 %highest counts for cruise
-%balanion = 4.7429e+03
-%ciliophora = 5.1893e+04
+%balanion = 4.7429e+03 = 4742.9
+%ciliophora = 5.1893e+04 = 51893
 %laboea strobila = 632.0185
 %leegaardiella ovalis = 609.7518
-%mesodinium = 8.3534e+03
-%strombidim m1 = 1.0730e+03
-%strombidium tintinnodes = 3.3387e+03
-%tintinnina = 2.0156e+03
-%tontonia appendiculariformis = 1.9685e+03
+%mesodinium = 8.3534e+03 = 8353.4
+%strombidim m1 = 1.0730e+03 = 1073
+%strombidium tintinnodes = 3.3387e+03 = 3338.7
+%tintinnina = 2.0156e+03 = 2015.6
+%tontonia appendiculariformis = 1.9685e+03 = 1968.5
+%1. ciliophora 2. mesodinium 3. balanion 4. strombidium tintinnodes 
+%5. tintinnina 6. tontonia appendiculariformis 7. strombidium m1 
+%8. laboea strobila 9. leegardiella ovalis
 
 %don't use ciliophora or anything not overlapping
 %meaning, just use balanion, mesodinium, laboea strobila, strombidium m1,

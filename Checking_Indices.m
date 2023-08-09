@@ -166,7 +166,7 @@ cruise_upper_spring = intersect(cruise_upperslope_ind, cruise_spring_ind);
 cruise_upper_summer = intersect(cruise_upperslope_ind, cruise_summer_ind);
 
 %%
-class2plot = 'Laboea strobila';
+class2plot = 'Tontonia appendiculariformis';
 
 switch class2plot
     case 'Balanion'
